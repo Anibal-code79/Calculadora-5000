@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Calcurador 5000</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <style>
+/* 
+   Reset básico: remove margens e paddings padrão 
+   e faz com que width/height contem bordas e paddings.
+*/
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* 
+   Estilos do body:
+   - Define fonte padrão
+   - Aplica um fundo em degradê
+   - Centraliza a calculadora vertical e horizontalmente
+*/
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: linear-gradient(135deg, #141e30, #243b55);
+    min-height: 100vh;                  /* ocupa altura total da tela */
+    display: flex;                      /* permite centralizar com flexbox */
+    align-items: center;                /* centraliza vertical */
+    justify-content: center;            /* centraliza horizontal */
+    color: #fff;                        /* cor do texto padrão branca */
+}
+
+/* 
+   Container principal da calculadora (.Calcu):
+   - Fundo escuro
+   - Bordas arredondadas
+   - Sombra para efeito de “cartão”
+*/
+.Calcu {
+    background: #222;
+    padding: 20px 20px 15px;
+    border-radius: 15px;
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.7);
+    width: 260px;                       /* largura fixa da calculadora */
+}
+
+/* 
+   Título da calculadora:
+   - Centraliza texto
+   - Ajusta tamanho da fonte
+*/
+.header h1 {
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 10px;
+    letter-spacing: 1px;               /* espaçamento entre letras */
+}
+
+/* 
+   Linhas (hr) do cabeçalho:
+   - Remove estilo padrão
+   - Define uma linha fina e discreta
+*/
+.header hr {
+    border: none;
+    border-top: 1px solid #444;
+    margin-bottom: 5px;
+}
+
+/* 
+   Display (campo de texto):
+   - Ocupa a largura total
+   - Fundo bem escuro com texto verde (estilo “terminal”)
+   - Texto alinhado à direita
+*/
+.display {
+    width: 100%;
+    height: 60px;
+    margin-top: 10px;
+    border-radius: 10px;
+    border: none;
+    background: #111;
+    color: #0f0;
+    font-size: 26px;
+    padding: 0 10px;
+    text-align: right;                 /* números alinhados à direita */
+    outline: none;                     /* remove contorno ao focar */
+}
+
+/* 
+   Corpo da calculadora (onde ficam os botões)
+*/
+.calc-body {
+    margin-top: 15px;
+}
+
+/* 
+   Linhas (hr) dentro do corpo:
+   - Linha discreta separando as áreas
+*/
+.calc-body hr {
+    border: none;
+    border-top: 1px solid #444;
+    margin-bottom: 5px;
+}
+
+/* 
+   Cada .row representa uma linha de botões:
+   - Usa flexbox para colocar os botões lado a lado
+   - Espaço entre as linhas
+*/
+.row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+}
+
+/* 
+   Estilos dos botões:
+   - Mesmo tamanho (flex: 1)
+   - Altura fixa
+   - Bordas arredondadas
+   - Fundo cinza escuro e texto branco
+   - Sombra para dar sensação de botão “alto”
+   - Animação leve em hover e click
+*/
+.row input[type="button"] {
+    flex: 1;
+    margin: 0 4px;
+    height: 48px;
+    border-radius: 8px;
+    border: none;
+    background: #333;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 3px 0 #111;          /* sombra embaixo do botão */
+    transition: background 0.15s, transform 0.1s, box-shadow 0.1s;
+}
+
+/* 
+   Efeito ao passar o mouse sobre os botões:
+   - Clareia um pouco o fundo
+*/
+.row input[type="button"]:hover {
+    background: #3e3e3e;
+}
+
+/* 
+   Efeito ao clicar (estado ativo):
+   - Move um pouco para baixo
+   - Diminui a sombra para parecer “apertado”
+*/
+.row input[type="button"]:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 #111;
+}
+
+/* 
+   Estilo específico para botões de operadores (+, -, x, /):
+   - Fundo laranja para destacar dos números
+*/
+.row input[value="+"],
+.row input[value="-"],
+.row input[value="x"],
+.row input[value="/"] {
+    background: #ff9500;
+}
+
+/* 
+   Efeito hover para operadores:
+   - Laranja um pouco mais claro
+*/
+.row input[value="+"]:hover,
+.row input[value="-"]:hover,
+.row input[value="x"]:hover,
+.row input[value="/"]:hover {
+    background: #ffa733;
+}
+
+/* 
+   Botão de limpar (C):
+   - Vermelho para indicar ação de "apagar"
+   - !important para garantir prioridade sobre outros estilos
+*/
+.clear {
+    background: #e74c3c !important;
+}
+
+/* 
+   Efeito hover do botão C:
+   - Vermelho mais claro
+*/
+.clear:hover {
+    background: #ff6b5a !important;
+}
+
+/* 
+   Botão de igual (=):
+   - Verde para indicar ação de "confirmar" / "resultado"
+*/
+.equals {
+    background: #2ecc71 !important;
+}
+
+/* 
+   Efeito hover do botão =:
+   - Verde mais claro
+*/
+.equals:hover {
+    background: #44d883 !important;
+}
+</style>
+<form class="Calcu">
+    <div class="header">
+        <hr />
+        <hr />
+        <h1>Calcurador 5000</h1>
+        <input
+            type="text"
+            class="display"
+            placeholder="0"
+            readonly
+        >
+    </div>
+
+    <div class="calc-body">
+        <hr />
+        <hr />
+        <hr />
+        <div class="row">
+            <input type="button" value="7">
+            <input type="button" value="8">
+            <input type="button" value="9">
+            <input type="button" value="+">
+        </div>
+        <div class="row">
+            <input type="button" value="4">
+            <input type="button" value="5">
+            <input type="button" value="6">
+            <input type="button" value="-">
+        </div>
+        <div class="row">
+            <input type="button" value="1">
+            <input type="button" value="2">
+            <input type="button" value="3">
+            <input type="button" value="x">
+        </div>
+        <div class="row">
+            <input type="button" value="0">
+            <input type="button" class="clear" value="C">
+            <input type="button" class="equals" value="=">
+            <input type="button" value="/">
+        </div>
+    </div>
+</form>
+
+<script>
+    // Seleciona o elemento do display (onde aparece a expressão e o resultado)
+const display = document.querySelector('.display');
+
+// Seleciona todos os botões dentro do corpo da calculadora
+const buttons = document.querySelectorAll('.calc-body input[type="button"]');
+
+// Variável que guarda a expressão atual digitada (ex: "12+3x4")
+let expressao = '';
+
+/**
+ * Atualiza o valor mostrado no display.
+ * Se não for passado valor, limpa o display.
+ */
+function atualizarDisplay(valor) {
+    display.value = valor || '';
+}
+
+// Adiciona um evento de clique para cada botão
+buttons.forEach((botao) => {
+    botao.addEventListener('click', () => {
+        // Pega o texto/valor do botão clicado (ex: "7", "+", "C", "=")
+        const valor = botao.value;
+
+        // --- Botão de LIMPAR (C) ---
+        if (valor === 'C') {
+            expressao = '';           // zera a expressão
+            atualizarDisplay('');     // limpa o display
+            return;                   // sai da função
+        }
+
+        // --- Botão de IGUAL (=) ---
+        if (valor === '=') {
+            // Se não tiver nada digitado, não faz nada
+            if (!expressao) return;
+
+            // Verifica se a expressão termina com um operador
+            // Ex: "5+" ou "7x" não podem ser calculados
+            if (/[+\-x\/]$/.test(expressao)) {
+                atualizarDisplay('Erro');  // mostra erro
+                expressao = '';           // limpa expressão
+                return;
+            }
+
+            // Garante que a expressão contém apenas números e operadores válidos
+            // Qualquer caractere estranho gera erro
+            if (/[^0-9+\-x\/]/.test(expressao)) {
+                atualizarDisplay('Erro');
+                expressao = '';
+                return;
+            }
+
+            try {
+                // Substitui 'x' por '*' para ser compreendido pelo JavaScript
+                const segura = expressao.replace(/x/g, '*');
+
+                // Usa Function para avaliar a expressão
+                // "use strict" deixa o código mais seguro
+                const resultado = Function('"use strict"; return (' + segura + ')')();
+
+                // Verifica se o resultado é um número finito
+                // (evita divisão por zero e outros erros)
+                if (!isFinite(resultado)) {
+                    atualizarDisplay('Erro');
+                    expressao = '';
+                } else {
+                    // Mostra o resultado no display
+                    atualizarDisplay(String(resultado));
+                    // Armazena o resultado na expressão para continuar calculando
+                    // Ex: resultado 10 -> pode apertar "+ 5 =" depois
+                    expressao = String(resultado);
+                }
+            } catch (e) {
+                // Se der qualquer erro na avaliação, mostra "Erro"
+                atualizarDisplay('Erro');
+                expressao = '';
+            }
+            return;  // termina o tratamento do botão "="
+        }
+
+        // --- Se não for C nem =, então é número ou operador (+, -, x, /) ---
+
+        // Verifica se o valor clicado é um operador
+        const ehOperador = /[+\-x\/]/.test(valor);
+
+        // Pega o último caractere da expressão atual
+        const ultimo = expressao.slice(-1);
+
+        // Se o novo valor for operador E o último caractere também for operador,
+        // substitui o último operador pelo novo.
+        //
+        // Ex: se expressao = "5+" e o usuário clicar "-", vira "5-"
+        if (ehOperador && /[+\-x\/]/.test(ultimo)) {
+            expressao = expressao.slice(0, -1) + valor;
+        } else {
+            // Caso normal: apenas adiciona o novo valor no fim da expressão
+            expressao += valor;
+        }
+
+        // Atualiza o display com a nova expressão
+        atualizarDisplay(expressao);
+    });
+});
+</script>
+</body>
+</html>
